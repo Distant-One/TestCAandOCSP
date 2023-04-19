@@ -1,0 +1,4 @@
+hosts
+ansible.cfg
+inventory
+*.ini
