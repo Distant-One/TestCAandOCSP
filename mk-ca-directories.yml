@@ -1,0 +1,41 @@
+# File:
+#	./mk-ca-directories.yml
+# Function:
+#	Used to create directory structure and initial files for a each caname in the list
+# usage:
+#	 ansible-playbook -i hosts mk-ca-directories.yml 
+# dependancies:
+#	./vars/ca-info.yml
+#	./cars/ca-secrets.yml
+# Make the following directories and files:
+#  <toplevelpath>/<root>CA/<root>CA/
+#  <toplevelpath>/<root>CA/<root>CA.cnf
+#  <toplevelpath>/<root>CA/<root>CA.key
+#  <toplevelpath>/<root>CA/<root>CACsr.pem
+#  <toplevelpath>/<root>CA/<root>CACert.pem
+#  <toplevelpath>/<root>CA/newcerts/
+#  <toplevelpath>/<root>CA/index.txt  #touch to create file
+#  <toplevelpath>/<root>CA/index.txt.attr  #touch to create file
+#  <toplevelpath>/<root>CA/serial       #echo 1000 > serial to create the file
+
+
+
+- hosts: all
+  
+  tasks:
+
+    - include_vars: ./vars/ca-info.yml
+    - include_vars: ./vars/ca-secrets.yml
+
+    - name: "Ping server."
+      action: ping
+
+    - name: "Create CA Directories"
+      file:
+        path: "{{ ca_top_dir }}/{{ item.caname }}"
+        state: directory
+      file:
+        path: "{{ ca_top_dir }}/{{ item.caname }}/newcerts"
+        state: directory
+      with_items: "{{canames}}"
+

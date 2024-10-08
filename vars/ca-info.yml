@@ -1,0 +1,19 @@
+# List of certificate authority details
+---
+canames:
+  - caname: rootCA
+    signingca: rootCA
+  - caname: int1CA
+    signingca: rootCA
+  - caname: int2CA
+    signingca: int1CA
+
+
+files:
+  - CaKey.pem
+  - CaCert.pem
+  - Ca.cnf
+  - index.txt
+  - index.txt.attr
+  - serial
+

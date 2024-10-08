@@ -1,5 +1,11 @@
 # TestCAandOCSP
 
+Ansible based repo to Create CA and OCSP Testing environment for x.509 certificates
+
+
+
+Previous README.md from bash scripted version is below:
+
 Create CA and OCSP Testing environment for x.509 certificates
 
 You'll need:

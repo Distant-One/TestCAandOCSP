@@ -2,3 +2,5 @@ hosts
 ansible.cfg
 inventory
 *.ini
+./vars/ca-secrets.yml
+ca-secrets.yml
