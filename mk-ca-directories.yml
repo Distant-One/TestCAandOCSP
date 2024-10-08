@@ -1,22 +1,26 @@
 # File:
 #	./mk-ca-directories.yml
-# Function:
-#	Used to create directory structure and initial files for a each caname in the list
+# Functionality:
+#	- Used to create directory structure and initial files for a each caname in the list
+#	- Will loop through canames listed in ca-info.yml creating directory trees for each
+#
 # usage:
 #	 ansible-playbook -i hosts mk-ca-directories.yml 
 # dependancies:
 #	./vars/ca-info.yml
 #	./cars/ca-secrets.yml
 # Make the following directories and files:
-#  <toplevelpath>/<root>CA/<root>CA/
-#  <toplevelpath>/<root>CA/<root>CA.cnf
-#  <toplevelpath>/<root>CA/<root>CA.key
-#  <toplevelpath>/<root>CA/<root>CACsr.pem
-#  <toplevelpath>/<root>CA/<root>CACert.pem
-#  <toplevelpath>/<root>CA/newcerts/
-#  <toplevelpath>/<root>CA/index.txt  #touch to create file
-#  <toplevelpath>/<root>CA/index.txt.attr  #touch to create file
-#  <toplevelpath>/<root>CA/serial       #echo 1000 > serial to create the file
+#  <toplevelpath>/<ca_name>CA/<ca_name>CA/
+#  <toplevelpath>/<ca_name>CA/newcerts/
+#
+# Below have not been implemented
+#  <toplevelpath>/<ca_name>CA/<ca_name>CA.cnf
+#  <toplevelpath>/<ca_name>CA/<ca_name>CA.key
+#  <toplevelpath>/<ca_name>CA/<ca_name>CACsr.pem
+#  <toplevelpath>/<ca_name>CA/<ca_name>CACert.pem
+#  <toplevelpath>/<ca_name>CA/index.txt  #touch to create file
+#  <toplevelpath>/<ca_name>CA/index.txt.attr  #touch to create file
+#  <toplevelpath>/<ca_name>CA/serial       #echo 1000 > serial to create the file
 
 
 
