@@ -12,15 +12,16 @@
 # Make the following directories and files:
 #  <toplevelpath>/<ca_name>CA/<ca_name>CA/
 #  <toplevelpath>/<ca_name>CA/newcerts/
+#  <toplevelpath>/<ca_name>/index.txt  #touch to create file
+#  <toplevelpath>/<ca_name>/index.txt.attr  #set to unique_subject = no for last CA so csr's can be signed multiple times
+#                                           #set to unique_subject = yes for oterh CA's since it is normal not to resign the same CSR multiple times
+#  <toplevelpath>/<ca_name>/serial       #echo 1000 > serial to create the file
 #
-# Below have not been implemented
-#  <toplevelpath>/<ca_name>CA/<ca_name>CA.cnf
-#  <toplevelpath>/<ca_name>CA/<ca_name>CA.key
-#  <toplevelpath>/<ca_name>CA/<ca_name>CACsr.pem
-#  <toplevelpath>/<ca_name>CA/<ca_name>CACert.pem
-#  <toplevelpath>/<ca_name>CA/index.txt  #touch to create file
-#  <toplevelpath>/<ca_name>CA/index.txt.attr  #touch to create file
-#  <toplevelpath>/<ca_name>CA/serial       #echo 1000 > serial to create the file
+# Below may be in different playbook
+#  <toplevelpath>/<ca_name>/<ca_name>.cnf
+#  <toplevelpath>/<ca_name>/<ca_name>Key.pem
+#  <toplevelpath>/<ca_name>/<ca_name>Csr.pem
+#  <toplevelpath>/<ca_name>/<ca_name>Cert.pem
 
 
 
@@ -41,5 +42,25 @@
       file:
         path: "{{ ca_top_dir }}/{{ item.caname }}/newcerts"
         state: directory
+      with_items: "{{canames}}"
+
+    - name: " Create index.txt files"
+      file:
+        path: "{{ ca_top_dir }}/{{ item.caname }}/index.txt"
+        state: touch
+      with_items: "{{canames}}"
+
+    - name: "Create index.txt.attr file"
+      copy:
+        dest: "{{ ca_top_dir }}/{{ item.caname }}/index.txt.attr"
+        content:  |
+          {{ item.indexattr }}
+      with_items: "{{canames}}"
+
+    - name: "Create serial file"
+      copy:
+        dest: "{{ ca_top_dir }}/{{ item.caname }}/serial"
+        content:  |
+          {{ item.serialstart }}
       with_items: "{{canames}}"
 

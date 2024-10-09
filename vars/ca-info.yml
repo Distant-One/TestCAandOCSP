@@ -1,19 +1,48 @@
 # List of certificate authority details
 ---
 canames:
-  - caname: rootCA
-    signingca: rootCA
-  - caname: int1CA
-    signingca: rootCA
-  - caname: int2CA
-    signingca: int1CA
+# Root CA which is self signed
+  - caname: rootCa
+    signingca: rootCa
+    indexattr: "unique_subject = yes"
+    serialstart: "1000"
+    basicconst:  "basicConstraints        = critical, CA:true, pathlen:3"
+# 1st intermediate CA  which is signed by the root CA
+  - caname: int1Ca
+    signingca: rootCa
+    indexattr: "unique_subject = yes"
+    serialstart: "1000"
+    basicconst:  "basicConstraints        = critical, CA:true, pathlen:2"
+# 2nd intermediate CA  which is signed by the 1st intermedate CA since Common criteria requires CA path lenght of 3 CA's.
+  - caname: int2Ca
+    signingca: int1Ca
+    indexattr: "unique_subject = no"
+    serialstart: "1000"
+    basicconst:  "basicConstraints        = critical, CA:true, pathlen:1"
+# Errored 2nd intermediate CA  which is signed by the 1st intermedate CA but has basic constriant CA set to false
+  - caname: falseCA
+    signingca: int1Ca
+    indexattr: "unique_subject = yes"
+    serialstart: "1000"
+    basicconst:  "basicConstraints        = critical, CA:false, pathlen:1"
+# Errored 2nd intermediate CA  which is signed by the 1st intermedate CA but has basic constriant CA  is missing
+  - caname: missingCA
+    signingca: int1Ca
+    indexattr: "unique_subject = yes"
+    serialstart: "1000"
+    basicconst:  "basicConstraints        = critical, pathlen:1"
 
 
-files:
-  - CaKey.pem
-  - CaCert.pem
-  - Ca.cnf
+
+housekeepingfiles:
   - index.txt
   - index.txt.attr
   - serial
 
+configfiles:
+  - Ca.cnf
+
+certfiles:
+  -keyname: Key.pem
+  -csrname: Csr.pem
+  -certname: Cert.pem
