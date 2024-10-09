@@ -17,8 +17,10 @@
 #                                           #set to unique_subject = yes for oterh CA's since it is normal not to resign the same CSR multiple times
 #  <toplevelpath>/<ca_name>/serial       #echo 1000 > serial to create the file
 #
-# Below may be in different playbook
+# Below not implemented yet be in different playbook
 #  <toplevelpath>/<ca_name>/<ca_name>.cnf
+#
+# Below may be in different playbook
 #  <toplevelpath>/<ca_name>/<ca_name>Key.pem
 #  <toplevelpath>/<ca_name>/<ca_name>Csr.pem
 #  <toplevelpath>/<ca_name>/<ca_name>Cert.pem
@@ -63,4 +65,73 @@
         content:  |
           {{ item.serialstart }}
       with_items: "{{canames}}"
+
+    - name: "Create CA config file"
+      copy:
+        dest: "{{ ca_top_dir }}/{{ item.caname }}/{{ item.caname }}.cnf"
+        content:  |
+          #Config file for {{ item.caname }}
+          #Begin OpenSSL CA Config
+          
+          [ ca ]
+          default_ca = CA_default
+
+          [ CA_default ]
+          dir = {{ ca_top_dir }}/{{ item.caname }}
+          
+          #where the newcerts will be copied to be tracked
+          new_certs_dir = $dir/newcerts
+          database = $dir/index.txt
+          serial = $dir/serial
+
+          # CA Private Key and Cert Files
+          private_key = $dir/{{ item.caname }}Key.pem
+          certificate = $dir/{{ item.caname }}Cert.pem
+
+          #the default message digest algorithm
+          default_md = {{ item.defaultmd }}
+          
+          #default number of days for a cert to be valid
+          default_days = 365
+
+          #formatting for certificate display, leave as default
+          name_opt = ca_default
+          cert_opt = ca_default
+          
+          #preserve ordering of requests, leave as no as it's largely for older versions of OpenSSL
+          preserve = no
+
+          #if signing a certificate has some requirements, e.g. can only sign certs from the same country
+          policy = policy_loose
+
+          #can be either optional, supplied, or match
+          [ policy_loose ]
+          countryName            = optional
+          stateOrProvinceName    = optional
+          localityName           = optional
+          organizationName       = optional
+          organizationalUnitName = optional
+          commonName             = supplied
+          emailAddress           = optional
+
+          #auto populate various attributes for the openssl req command
+          [ req ]
+          prompt = no
+          distinguished_name = req_distinguished_name
+          # commented this line out so that it could be set in next line req_extensions = v3_ca
+          req_extensions = v3_ca
+          #_rq _eqls _vlu
+          [ req_distinguished_name ]
+          #follows the ordering from policy_loose above
+          C  = my country
+          ST = my state
+          L  = my location 
+          O  = my company
+          OU = my organization
+          CN = {{ item.caname }}.{{ ca_domain }}
+          emailAddress = {{ item.caname }}@{{ ca_domain }}
+
+
+      with_items: "{{canames}}"
+
 
