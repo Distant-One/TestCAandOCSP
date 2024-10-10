@@ -3,11 +3,16 @@
 Ansible based repo to Create CA and OCSP Testing environment for x.509 certificates
 
 Info Files:
+
 ./example.hosts - copy to hosts and edit with host IP taarget for ansible
+
 ./vars/example.ca-secrets.yml - copy to ./vars/ca-secrets.yml and edit for you specific CA implmentation
+
 ./vars/ca-info.yml - edit for your specific CA needs
 
+
 YML Files:
+
 mk-ca-directories.yml - will make all CA directories and set up their associated basic files
 
 
