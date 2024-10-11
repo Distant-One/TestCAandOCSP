@@ -123,13 +123,13 @@
           #_rq _eqls _vlu
           [ req_distinguished_name ]
           #follows the ordering from policy_loose above
-          C  = {{ item.country }}
-          ST = {{ item.state }}
-          L  = {{ item.location }}
-          O  = {{ item.organization }}
-          OU = {{ item.organizational_unit }}
+          C  = {{ cn_country }}
+          ST = {{ cn_state }}
+          L  = {{ cn_location }}
+          O  = {{ cn_org }}
+          OU = {{ cn_org_unit }}
           CN = {{ item.caname }}.{{ ca_domain }}
-          emailAddress = {{ item.emailaddr }}
+          emailAddress = {{ cn_email_addr }}
 
       with_items: "{{canames}}"
 
