@@ -8,6 +8,12 @@ canames:
     serialstart: "1000"
     basicconst:  "basicConstraints        = critical, CA:true, pathlen:3"
     defaultmd: "sha256"
+    country: "my country"
+    state: "my state"
+    location: "my location"
+    organization: "my company"
+    organizational_unit: "My working group"
+    emailaddr: "somebody@example.com"
 # 1st intermediate CA  which is signed by the root CA
   - caname: int1Ca
     signingca: rootCa
@@ -15,6 +21,12 @@ canames:
     serialstart: "1000"
     basicconst:  "basicConstraints        = critical, CA:true, pathlen:2"
     defaultmd: "sha256"
+    country: "my country"
+    state: "my state"
+    location: "my location"
+    organization: "my company"
+    organizational_unit: "My working group"
+    emailaddr: "somebody@example.com"
 # 2nd intermediate CA  which is signed by the 1st intermedate CA since Common criteria requires CA path lenght of 3 CA's.
   - caname: int2Ca
     signingca: int1Ca
@@ -22,6 +34,12 @@ canames:
     serialstart: "1000"
     basicconst:  "basicConstraints        = critical, CA:true, pathlen:1"
     defaultmd: "sha256"
+    country: "my country"
+    state: "my state"
+    location: "my location"
+    organization: "my company"
+    organizational_unit: "My working group"
+    emailaddr: "somebody@example.com"
 # Errored 2nd intermediate CA  which is signed by the 1st intermedate CA but has basic constriant CA set to false
   - caname: falseCA
     signingca: int1Ca
@@ -29,6 +47,12 @@ canames:
     serialstart: "1000"
     basicconst:  "basicConstraints        = critical, CA:false, pathlen:1"
     defaultmd: "sha256"
+    country: "my country"
+    state: "my state"
+    location: "my location"
+    organization: "my company"
+    organizational_unit: "My working group"
+    emailaddr: "somebody@example.com"
 # Errored 2nd intermediate CA  which is signed by the 1st intermedate CA but has basic constriant CA  is missing
   - caname: missingCA
     signingca: int1Ca
@@ -36,6 +60,12 @@ canames:
     serialstart: "1000"
     basicconst:  "basicConstraints        = critical, pathlen:1"
     defaultmd: "sha256"
+    country: "my country"
+    state: "my state"
+    location: "my location"
+    organization: "my company"
+    organizational_unit: "My working group"
+    emailaddr: "somebody@example.com"
 
 
 
