@@ -66,70 +66,12 @@
           {{ item.serialstart }}
       with_items: "{{canames}}"
 
-    - name: "Create CA config file"
+
+    - name: "Copy bash scripts to top level ca directory"
       copy:
-        dest: "{{ ca_top_dir }}/{{ item.caname }}/{{ item.caname }}.cnf"
-        content:  |
-          #Config file for {{ item.caname }}
-          #Begin OpenSSL CA Config
-          
-          [ ca ]
-          default_ca = CA_default
-
-          [ CA_default ]
-          dir = {{ ca_top_dir }}/{{ item.caname }}
-          
-          #where the newcerts will be copied to be tracked
-          new_certs_dir = $dir/newcerts
-          database = $dir/index.txt
-          serial = $dir/serial
-
-          # CA Private Key and Cert Files
-          private_key = $dir/{{ item.caname }}Key.pem
-          certificate = $dir/{{ item.caname }}Cert.pem
-
-          #the default message digest algorithm
-          default_md = {{ item.defaultmd }}
-          
-          #default number of days for a cert to be valid
-          default_days = 365
-
-          #formatting for certificate display, leave as default
-          name_opt = ca_default
-          cert_opt = ca_default
-          
-          #preserve ordering of requests, leave as no as it's largely for older versions of OpenSSL
-          preserve = no
-
-          #if signing a certificate has some requirements, e.g. can only sign certs from the same country
-          policy = policy_loose
-
-          #can be either optional, supplied, or match
-          [ policy_loose ]
-          countryName            = optional
-          stateOrProvinceName    = optional
-          localityName           = optional
-          organizationName       = optional
-          organizationalUnitName = optional
-          commonName             = supplied
-          emailAddress           = optional
-
-          #auto populate various attributes for the openssl req command
-          [ req ]
-          prompt = no
-          distinguished_name = req_distinguished_name
-          # commented this line out so that it could be set in next line req_extensions = v3_ca
-          req_extensions = v3_ca
-          #_rq _eqls _vlu
-          [ req_distinguished_name ]
-          #follows the ordering from policy_loose above
-          C  = {{ cn_country }}
-          ST = {{ cn_state }}
-          L  = {{ cn_location }}
-          O  = {{ cn_org }}
-          OU = {{ cn_org_unit }}
-          CN = {{ item.caname }}.{{ ca_domain }}
-          emailAddress = {{ cn_email_addr }}
+        src: ./bashscripts/
+        dest: "{{ ca_top_dir }}"
+        mode: preserve 
 
       with_items: "{{canames}}"
 
