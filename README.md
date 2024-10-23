@@ -14,6 +14,24 @@ Info Files:
 YML Files:
 
 mk-ca-directories.yml - will make all CA directories and set up their associated basic files
+   ansible-playbook ^ this 1st to create directory/file stucture
+
+mk-ca-config.yml - will make all CA config files 
+   ansible-playbook ^ this 2nd to create CA config files
+
+
+
+Bash Files:
+
+re-signCA.sh - execute once for each CA to create CA certs
+   execute ^ 1st to create CA certs
+
+mkcsr.sh - creates certificate from config file. Execute to create csr for server, client, device, etc.
+   when making device certificates, exexute ^ 1st to create the csr
+
+signcsr.sh - signs device csr to create device cert fro server, client, device, etc.
+   run ^ this when a device csr needs to be signed to create a certificate
+
 
 
 
