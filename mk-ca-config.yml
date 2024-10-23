@@ -1,0 +1,143 @@
+# File:
+#	./mk-ca-config.yml
+# Functionality:
+#
+# usage:
+#	 ansible-playbook -i hosts mk-ca-config.yml 
+# dependancies:
+#	./vars/ca-info.yml
+#	./vars/ca-secrets.yml
+- hosts: all
+  
+  tasks:
+
+    - include_vars: ./vars/ca-info.yml
+    - include_vars: ./vars/ca-secrets.yml
+
+    - name: "Ping server."
+      action: ping
+
+    - name: "Create CA config file"
+      copy:
+        dest: "{{ ca_top_dir }}/{{ item.caname }}/{{ item.caname }}.cnf"
+        content:  |
+          # Config file for {{ item.caname }}
+          # CA ipaddress {{ ca_server }}
+          # dir = {{ ca_top_dir }}/{{ item.caname }}
+          # new_certs_dir = $dir/newcerts
+          #database = $dir/index.txt
+          #serial = $dir/serial
+          #default_md = {{ item.defaultmd }} 
+          #default_days = 365
+          # authorityInfoAccess    = OCSP;URI:http://{{ ca_server }}:{{ item.ocsp_port }}
+          # IP.1 = {{ ca_server }}
+
+          [ ca ]
+          default_ca = CA_default
+
+          [ CA_default ]
+          #this is the directory where the CA cert will live
+          #if placed in your home directory, a tilde (~) will not be expanded
+          #to the full path, so only use the absolute path /home/user
+          dir = {{ ca_top_dir }}/{{ item.caname }}
+          #dangerous for general use since tis will copy all included extensions from the csr, but I'm just testing
+          copy_extensions = copy
+
+
+          #where the newcerts will be copied to be tracked
+          new_certs_dir = $dir/newcerts
+
+          #the database file that tracks the status of certs
+          database = $dir/index.txt
+
+          #the serial number to place on a signed cert
+          serial = $dir/serial
+
+          #the CA cert's private key
+          private_key = $dir/{{ item.caname }}.key.pem
+
+          #the CA cert's certificate
+          certificate = $dir/{{ item.caname }}.cert.pem
+
+          #the default message digest algorithm
+          default_md = {{ item.defaultmd }} 
+
+          #default number of days for a cert to be valid
+          default_days = 365
+
+          #formatting for certificate display, leave as default
+          name_opt = ca_default
+          cert_opt = ca_default
+
+          #preserve ordering of requests, leave as no as it's largely for older versions of OpenSSL
+          preserve = no
+
+          #if signing a certificate has some requirements, e.g. can only sign certs from the same country
+          policy = policy_loose
+
+          #can be either optional, supplied, or match
+          [ policy_loose ]
+          countryName            = optional
+          stateOrProvinceName    = optional
+          localityName           = optional
+          organizationName       = optional
+          organizationalUnitName = optional
+          commonName             = supplied
+          emailAddress           = optional
+
+          #auto populate various attributes for the openssl req command
+          [ req ]
+          prompt = no
+          distinguished_name = req_distinguished_name
+          # commented this line out so that it could be set in next line req_extensions = v3_ca
+          #_reqextentreq_extensions = v3_ca
+          req_extensions = v3_{{ item.caname }}
+
+          #_rq _eqls _vlu
+
+          [ req_distinguished_name ]
+          #follows the ordering from policy_loose above
+          C  = {{ cn_country }}
+          ST = {{ cn_state  }}
+          L  = {{ cn_location }}
+          O  = {{ cn_org }}
+          OU = {{ cn_org_unit }}
+          CN = {{ item.caname }}.{{ ca_domain }}
+          emailAddress = {{ cn_email_addr }}
+
+          #when we use {{ item.caname }} the req command for OpenSSL, use these settings
+          [ v3_{{ item.caname }} ]
+          #basicConstraints        = critical, CA:true, pathlen:3
+          {{ item.basicconst }}
+
+          #subjectKeyIdentifier   = hash
+          {{ item.subjectKeyIdentifier }}
+
+          #authorityKeyIdentifier = keyid:always,issuer
+          {{ item.rootauthorityKeyIdentifier }}
+
+          authorityInfoAccess    = OCSP;URI:http://{{ ca_server }}:{{ item.ocsp_port }}
+
+          #extendedKeyUsage        = clientAuth, serverAuth
+          #extendedKeyUsage       = serverAuth
+          {{ item.extendedKeyUsage }}
+
+          #keyUsage                = critical, digitalSignature, cRLSign, keyCertSign
+          {{ item.keyUsage }}
+
+          subjectAltName  =       @alt_names
+
+          #the extensions we give to certs we sign
+          [ v3_ocsp ]
+          #authorityKeyIdentifier = keyid:always,issuer
+          {{ item.authorityKeyIdentifier }}
+          authorityInfoAccess    = OCSP;URI:http://{{ ca_server }}:{{ item.ocsp_port }}
+          
+          # This SAN is for CA certs. Provide csr specific versions in the csr
+          [ alt_names ]
+          #DNS.1  =       {{ item.caname }}.{{ ca_domain }}
+          IP.1    =       {{ ca_server }}
+
+          #End OpenSSL CA Config
+
+      with_items: "{{canames}}"
