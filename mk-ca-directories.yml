@@ -73,6 +73,6 @@
         dest: "{{ ca_top_dir }}"
         mode: preserve 
 
-      with_items: "{{canames}}"
+#      with_items: "{{canames}}"
 
 
